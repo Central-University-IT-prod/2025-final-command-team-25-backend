@@ -1,0 +1,41 @@
+.ssh:
+  image: kroniak/ssh-client:3.19
+  variables:
+    SSH_HOST: "REDACTED"
+    SSH_USER: "ubuntu"
+    SSH_ADDRESS: $SSH_USER@$SSH_HOST
+  before_script:
+    - mkdir -p ~/.ssh && chmod 700 ~/.ssh
+    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config && chmod 600 ~/.ssh/config
+    - echo "$SSH_PRIVATE_KEY_BASE64" | base64 -d > ~/.ssh/id_rsa && chmod 400 ~/.ssh/id_rsa
+    - ssh-agent sh -c "ssh-add ~/.ssh/id_rsa"
+    - ssh-keyscan -H "$SSH_HOST"
+
+.docker_deploy:
+  extends: .ssh
+  stage: deploy
+  variables:
+    IMAGE_TAG: $CI_COMMIT_SHA
+    IMAGE_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    CONTEXT: $CI_PROJECT_DIR
+    PROJECT_PATH: /home/ubuntu/app/
+  script:
+    # Ensure target directory exists on server
+    - ssh $SSH_ADDRESS "mkdir -p $PROJECT_PATH"
+
+    # Archive project directory into a tarball and copy it to the server
+    - tar -czf project.tar.gz -C "$CONTEXT" .
+    - scp project.tar.gz $SSH_ADDRESS:$PROJECT_PATH
+
+    # Extract files on server
+    - ssh $SSH_ADDRESS "cd $PROJECT_PATH && tar -xzf project.tar.gz && rm project.tar.gz"
+
+    # Stop and remove existing containers gracefully
+    - ssh $SSH_ADDRESS "cd $PROJECT_PATH && docker compose down"
+
+    # Build and start new containers
+    - ssh $SSH_ADDRESS "cd $PROJECT_PATH && docker compose up -d --build"
+
+    # Clean up unused Docker images and cache
+    - ssh $SSH_ADDRESS "docker system prune -f --volumes"
+

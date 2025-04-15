@@ -1,0 +1,36 @@
+[tool.poetry]
+name = "backend"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = "^0.115.9"
+uvicorn = "^0.34.0"
+sqlalchemy = "^2.0.38"
+pydantic = {extras = ["email"], version = "^2.10.6"}
+pydantic-settings = "^2.8.1"
+asyncpg = "^0.30.0"
+alembic = "^1.14.1"
+psycopg2-binary = "^2.9.10"
+bcrypt = "^4.3.0"
+pyjwt = "^2.10.1"
+boto3 = "^1.37.4"
+python-multipart = "^0.0.20"
+httpx = "^0.28.1"
+aiofiles = "^24.1.0"
+
+
+[tool.poetry.group.dev.dependencies]
+pylint = "^3.3.4"
+black = "^25.1.0"
+testcontainers = "^4.9.1"
+pytest = {extras = ["asyncio"], version = "^8.3.4"}
+pytest-asyncio = "^0.25.3"
+coverage = "^7.6.12"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

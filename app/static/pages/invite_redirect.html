@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Приглашение</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+    }
+    .container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      max-width: 90%;
+    }
+    h1 {
+      font-size: 24px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    p {
+      font-size: 16px;
+      margin-bottom: 30px;
+      color: #666;
+    }
+    a.button {
+      display: inline-block;
+      padding: 12px 24px;
+      background: #007bff;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 5px;
+      font-size: 16px;
+      margin: 5px;
+    }
+    a.button:hover {
+      background: #0056b3;
+    }
+  </style>
+  <script>
+    // Получаем значение query-параметра по имени
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
+    window.onload = function() {
+      const bookingId = getQueryParam('booking_id');
+      if (bookingId) {
+        // Формируем deep link для приложения
+        const deepLink = "bookit://prod/invite?booking_id=" + bookingId;
+        // Устанавливаем ссылку для кнопки "Открыть приложение"
+        document.getElementById("openApp").href = deepLink;
+        // Автоматически перенаправляем через 3 секунды
+        setTimeout(function(){
+          window.location.href = deepLink;
+        }, 1000);
+      } else {
+        document.getElementById("openApp").style.display = "none";
+      }
+    };
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h1>Приглашение на встречу</h1>
+    <p>Чтобы принять приглашение, откройте приложение на своём телефоне.</p>
+    <p>Если приложение не открылось автоматически, нажмите на кнопку ниже.</p>
+    <a id="openApp" class="button" href="#">Открыть приложение</a>
+    <br><br>
+    <a class="button" href="https://drive.google.com/your-apk-download-link" target="_blank">Скачать приложение</a>
+  </div>
+</body>
+</html>

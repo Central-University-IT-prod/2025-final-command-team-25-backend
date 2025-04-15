@@ -1,0 +1,23 @@
+---
+.build:
+  image:
+    name: gcr.io/kaniko-project/executor:v1.23.2-debug
+    entrypoint: [""]
+  stage: build
+  variables:
+    DOCKERFILE_PATH: Dockerfile
+    DOCKER_CONFIG: /kaniko/.docker
+    CONTEXT: $CI_PROJECT_DIR
+    IMAGE_TAG: $CI_COMMIT_SHA
+    IMAGE_NAME: $CI_REGISTRY_IMAGE:$IMAGE_TAG
+    REGISTRY_USER: $CI_REGISTRY_USER
+    REGISTRY_PASSWORD: $CI_REGISTRY_PASSWORD
+    REGISTRY_URL: $CI_REGISTRY
+  script:
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$REGISTRY_USER\",\"password\":\"$REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor
+      --context "${CONTEXT}"
+      --dockerfile "${CI_PROJECT_DIR}/${DOCKERFILE_PATH}"
+      --destination "${IMAGE_NAME}"
+      --cache=True

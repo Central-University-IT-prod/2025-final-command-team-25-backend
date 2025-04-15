@@ -1,0 +1,1 @@
+uri = "postgresql+psycopg2://test:test@localhost:51130"
